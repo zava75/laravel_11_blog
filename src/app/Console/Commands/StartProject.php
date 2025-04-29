@@ -58,10 +58,8 @@ class StartProject extends Command
 
         $this->call('sitemap:generate');
 
-        $this->info('Start queue work...');
-        $this->call('queue:work');
-
         $this->info('Project started successfully!');
+        $this->info('To start processing jobs, run: php artisan queue:work in a separate terminal.');
     }
 
     /**
@@ -82,9 +80,7 @@ class StartProject extends Command
 
         $this->call('sitemap:generate');
 
-        $this->info('Start queue work...');
-        $this->call('queue:work');
-
         $this->info('Project refresh completed!');
+        $this->info('To start processing jobs, run: php artisan queue:work in a separate terminal.');
     }
 }
