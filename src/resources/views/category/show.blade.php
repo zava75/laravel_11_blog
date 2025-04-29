@@ -1,0 +1,97 @@
+@extends('layouts.template')
+
+@section('title', $category->title ?? 'Title category')
+
+@section('description')
+    {{ $category->description ?? 'Category description' }}
+@endsection
+
+@section('h1', $category->h1 ?? 'Category H1')
+
+@section('content')
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
+            @if($category->parent)
+                <li class="breadcrumb-item"><a href="{{ route('category.show', ['category' => $category->parent->slug]) }}">{{ $category->parent->name }}</a></li>
+            @endif
+            <li class="breadcrumb-item active" aria-current="page">{{ $category->name }}</li>
+        </ol>
+    </nav>
+
+    @include('layouts.search')
+
+    <div>
+        @if ($category->article)
+            <p>{{ $category->article }}</p>
+        @endif
+    </div>
+        @if ($posts->count())
+            @foreach ($posts as $post)
+                <article>
+                    <div class="mb-3 bg-light rounded-lg">
+                        @if($post->image)
+                            <div class="row" style="margin: 0">
+                                <div class="col-md-6 bg-image" style="background-image: url('{{ asset('images/blog/' . $post->image) }}');"></div>
+                                <div class="col-md-6">
+                                    <div class="p-4 d-flex flex-column h-100">
+                                        <h5 class="card-title py-4">{{ $post->name }}</h5>
+                                        <p>{{ __('Category') }} <a href="{{ route('category.show', ['category' => $post->category->parent->slug,
+                                                 'child' => $post->category->slug]) }}">{{ $post->category->name }}</a></p>
+                                        <b>{{ __('Author') }} {{ $post->user ? $post->user->name : __('Unknown') }}</b>
+                                        @if($post->updated_at)
+                                            <p>{{ $post->updated_at->format('d-m-Y') }}</p>
+                                        @else
+                                            <p>{{ $post->created_at->format('d-m-Y') }}</p>
+                                        @endif
+                                        <p class="card-text flex-grow-1">{{ $post->description }}</p>
+                                        @if($post->tags->count())
+                                            <div class="mb-3">
+                                                <b>{{ __('Tags :') }}</b>
+                                                @foreach($post->tags as $tag)
+                                                    <b>{{ $tag->name }}</b>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                        <span><a href="{{ route('post.show', [ 'category' => $post->category->parent->slug,
+                                                 'child' => $post->category->slug , 'post' => $post->slug ]) }}"
+                                                 class="btn btn-primary">{{ __('Read me') }}</a></span>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="p-4">
+                                <h5 class="card-title py-4">{{ $post->name }}</h5>
+                                <p>{{ __('Category') }} <a href="{{ route('category.show', ['category' => $post->category->parent->slug,
+                                                 'child' => $post->category->slug]) }}">{{ $post->category->name }}</a></p>
+                                <b>{{ __('Author') }} {{ $post->user ? $post->user->name : __('Unknown') }}</b>
+                                @if($post->updated_at)
+                                    <p>{{ $post->updated_at->format('d-m-Y') }}</p>
+                                @else
+                                    <p>{{ $post->created_at->format('d-m-Y') }}</p>
+                                @endif
+                                <p class="card-text">{{ $post->description }}</p>
+                                @if($post->tags->count())
+                                    <div class="mb-3">
+                                        <b>{{ __('Tags :') }}</b>
+                                        @foreach($post->tags as $tag)
+                                            <b>{{ $tag->name }}</b>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <span><a href="{{ route('post.show', [ 'category' => $post->category->parent->slug,
+                                                 'child' => $post->category->slug , 'post' => $post->slug ]) }}"
+                                         class="btn btn-primary">{{ __('Read me') }}</a></span>
+                            </div>
+                        @endif
+                    </div>
+                </article>
+            @endforeach
+
+            <div class="d-flex justify-content-start">
+                {{ $posts->links('layouts.pagination') }}
+            </div>
+        @else
+            <p>{{ __('There are no post in this category') }}</p>
+        @endif
+@endsection
